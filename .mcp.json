@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "evipedia": {
+      "command": "npx",
+      "args": ["-y", "evipedia-mcp"],
+      "env": {}
+    }
+  }
+}
