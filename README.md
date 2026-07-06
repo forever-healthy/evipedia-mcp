@@ -1,5 +1,6 @@
 ![Version 0.1.0](https://img.shields.io/badge/Version-0.1.0-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
+![evipedia.ai](./docs/evipedia-header.png)
 
 **evipedia-mcp** — MCP Server for [evipedia.ai](https://evipedia.ai)
 
@@ -77,14 +78,3 @@ Base URL: `https://evipedia.ai`
 | `GET /llms.txt` | Agent/human signpost — includes the stable section anchor list |
 | `GET /sitemap.xml` | Canonical review URLs |
 | `GET /feed.xml` | RSS feed of latest updates |
-
-Notes:
-* `search.json.url` gives the review slug (`/{permalink}`) used by `/{permalink}.md`. `short_topic` is a display label whose casing is inconsistent, so it is **not** a reliable slug — join `search.json` to `reviews.json` on the `url` slug, not on `short_topic`.
-* Field-shape gotcha: `alternate_names` is a comma-separated **string** in `search.json` but a **`string[]` array** in `reviews.json`; `ep_keywords` may be `null`.
-* Every review shares 22 fixed section headings with stable kramdown anchors (e.g. `/{permalink}_er#conclusion`); the canonical heading→anchor list is in `/llms.txt`
-* Production indexes exclude `ep_visible: false` reviews (e.g. `peptide`, `psychedelics` categories) — the MCP surfaces only publicly visible reviews
-
-
-## License
-
-MIT — this covers the server code. Evipedia content is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (© Forever Healthy Foundation).
