@@ -9,7 +9,7 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 
 ### Tools
 
-* `search_reviews(query)` → matching reviews (name / synonym / keyword / category), each with its permalink
+* `search_reviews(query)` → matching reviews (name/synonym/keyword/category), each with its permalink
 * `get_review(permalink)` → the full review as raw Markdown
 * `get_conclusion(permalink)` → just the review's plain-text conclusion
 * `suggest_intervention(intervention, goal?, references?, email?)` → submit a new intervention to evipedia's public suggestion form (the same one at [evipedia.ai/suggest](https://evipedia.ai/suggest))
@@ -61,10 +61,10 @@ In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection �
 
 ## Architecture
 
-The server is a **thin client over evipedia.ai's public endpoints only**. It does not depend on the evipedia content repo — the public surfaces are the API by design.
+The server is a **thin client that only uses evipedia.ai's public endpoints**. It does not depend on the evipedia content repo — the public surfaces are the API by design.
 
 * Fetches live from `https://evipedia.ai` with a small in-process cache (both JSON indexes are tiny)
-* Optional `EVIPEDIA_BASE_URL` env var to point at a preview / staging build
+* Optional `EVIPEDIA_BASE_URL` env var to point at a preview/staging build
 * Mostly read-only, no auth required. The one write path is `suggest_intervention`, which POSTs to evipedia's public suggestion form (Formspree); override its target with `EVIPEDIA_SUGGEST_ENDPOINT`
 
 
