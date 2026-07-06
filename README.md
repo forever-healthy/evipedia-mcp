@@ -2,12 +2,10 @@
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 ![evipedia.ai](./docs/evipedia-header.png)
 
-**evipedia-mcp** — MCP Server for [evipedia.ai](https://evipedia.ai)
+# Evipedia MCP
 
+A small [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents query [evipedia.ai](https://evipedia.ai) — a continuously-updated encyclopedia of hundreds of evidence reviews on health & longevity interventions — and suggest new interventions for review.
 
-## What It Does
-
-A small [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents query evipedia.ai — a continuously-updated encyclopedia of hundreds of evidence reviews on health & longevity interventions — and suggest new interventions for review.
 
 ### Tools
 
