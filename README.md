@@ -4,7 +4,7 @@
 
 # Evipedia MCP
 
-A small [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents query [evipedia.ai](https://evipedia.ai) — a continuously-updated encyclopedia of hundreds of evidence reviews on health & longevity interventions — and suggest new interventions for review.
+A small [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents query [evipedia.ai](https://evipedia.ai) — our continuously-updated encyclopedia of evidence reviews on health & longevity interventions — and suggest new interventions for review.
 
 
 ### Tools
