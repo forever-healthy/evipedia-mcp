@@ -1,4 +1,5 @@
 {
+  "enabledMcpjsonServers": ["evipedia"],
   "permissions": {
     "deny": ["WebFetch"],
     "allow": [
