@@ -2,7 +2,7 @@
   "mcpServers": {
     "evipedia": {
       "command": "npx",
-      "args": ["-y", "evipedia-mcp"],
+      "args": ["-y", "evipedia-mcp@latest"],
       "env": {}
     }
   }
