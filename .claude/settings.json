@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "deny": ["WebFetch"],
+    "allow": [
+      "Edit",
+      "Write",
+      "Read",
+      "Bash(*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(gh:*)",
+      "Bash(gh issue:*)",
+      "Bash(git:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(mv:*)",
+      "WebSearch"
+    ]
+  },
+  "model": "opus",
+  "outputStyle": "default",
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); dir=$(basename \"$(echo \"$input\" | jq -r '.cwd')\" | tr '[:lower:]' '[:upper:]'); user=$(gh api user -q .login); model=$(echo \"$input\" | jq -r '.model.display_name // empty' | sed 's/^Claude //'); printf '\\033[48;2;64;224;208m\\033[38;2;0;0;0m %s - %s | %s \\033[0m' \"$dir\" \"$user\" \"$model\""
+  }
+}
