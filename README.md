@@ -50,8 +50,6 @@ Use the same block inside the client's own config (`claude_desktop_config.json` 
 }
 ```
 
-To point at a staging build, add an `env` block with `"EVIPEDIA_BASE_URL": "https://your-preview-host"`.
-
 Requires Node.js ≥ 18.
 
 ### Try it
@@ -64,8 +62,7 @@ In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection �
 The server is a **thin client that only uses evipedia.ai's public endpoints**. It does not depend on the evipedia content repo — the public surfaces are the API by design.
 
 * Fetches live from `https://evipedia.ai` with a small in-process cache (both JSON indexes are tiny)
-* Optional `EVIPEDIA_BASE_URL` env var to point at a preview/staging build
-* Mostly read-only, no auth required. The one write path is `suggest_intervention`, which POSTs to evipedia's public suggestion form (Formspree); override its target with `EVIPEDIA_SUGGEST_ENDPOINT`
+* Mostly read-only, no auth required. The one write path is `suggest_intervention`, which POSTs to evipedia's public suggestion form (Formspree)
 
 
 ## Public API Surface
