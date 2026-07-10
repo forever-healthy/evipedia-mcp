@@ -1,4 +1,4 @@
-![Version 0.1.4](https://img.shields.io/badge/Version-0.1.4-green.svg)
+![Version 0.1.9](https://img.shields.io/badge/Version-0.1.9-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 ![evipedia.ai](./docs/evipedia-header.png)
 
@@ -10,8 +10,9 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 ### Tools
 
 * `search_reviews(query)` → matching reviews (name/synonym/keyword/category), each with its permalink
-* `get_review(permalink)` → the full review as raw Markdown
+* `list_reviews()` → the full catalogue as `{topic, slug}` pairs (canonical topic + the slug you pass to `get_review`/`get_conclusion`)
 * `get_conclusion(permalink)` → just the review's plain-text conclusion
+* `get_review(permalink)` → the full review as raw Markdown
 * `suggest_intervention(intervention, goal?, references?, email?)` → submit a new intervention to evipedia's public suggestion form (the same one at [evipedia.ai/suggest](https://evipedia.ai/suggest))
 * `get_version()` → the running server's package name and version
 
