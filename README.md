@@ -1,5 +1,6 @@
-![Version 0.1.12](https://img.shields.io/badge/Version-0.1.12-green.svg)
+![Version 0.1.14](https://img.shields.io/badge/Version-0.1.14-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
+[![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)
 ![evipedia.ai](./docs/evipedia-header.png)
 
 # Evipedia MCP Server
@@ -22,7 +23,7 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 
 ## Install
 
-The server is published to npm as **[`evipedia-mcp`](https://www.npmjs.com/package/evipedia-mcp)** and runs over stdio via `npx` — no global install needed.
+The server is published to npm as **[`evipedia-mcp`](https://www.npmjs.com/package/evipedia-mcp)** and runs over stdio via `npx` — no global install needed. It's also listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp) as **`io.github.forever-healthy/evipedia-mcp`**, so MCP-aware clients can discover and install it automatically.
 
 Add the following to your MCP client's config:
 

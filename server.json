@@ -1,0 +1,55 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.forever-healthy/evipedia-mcp",
+  "title": "Evipedia",
+  "description": "MCP Server for evipedia.ai — evidence-based reviews of health & longevity interventions",
+  "websiteUrl": "https://evipedia.ai",
+  "icons": [
+    {
+      "src": "https://evipedia.ai/assets/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    },
+    {
+      "src": "https://evipedia.ai/assets/favicon-192.png",
+      "mimeType": "image/png",
+      "sizes": ["192x192"]
+    },
+    {
+      "src": "https://evipedia.ai/assets/favicon-512.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/forever-healthy/evipedia-mcp",
+    "source": "github"
+  },
+  "version": "0.1.13",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "evipedia-mcp",
+      "version": "0.1.13",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "EVIPEDIA_BASE_URL",
+          "description": "Override the evipedia.ai base URL the server fetches reviews from.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "https://evipedia.ai"
+        },
+        {
+          "name": "EVIPEDIA_SUGGEST_ENDPOINT",
+          "description": "Override the endpoint that suggest_intervention submits to.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "https://formspree.io/f/myknrvdg"
+        }
+      ]
+    }
+  ]
+}
