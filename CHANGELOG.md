@@ -1,6 +1,12 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.12 — 2026-07-12
+
+* Added `get_metadata` — structured medical metadata as JSON (review dates `datePublished`/`dateModified`/`lastReviewed`, the typed `about` entity with alternate names, and an ordered `citation` list with PubMed PMIDs), sourced from evipedia's `/{slug}.meta.json` endpoint — data not present in the raw Markdown
+* Documented that `get_review`/`get_conclusion` accept a slug or a full evipedia.ai URL, and that `search_reviews` returns each match's URL and conclusion
+* Collapsed the duplicate MCP client config blocks in the README into one
+
 ### v0.1.10 — 2026-07-10
 
 * Standardized the review identifier on `slug` across all tools — `get_review` and `get_conclusion` now take a `slug` parameter (was `permalink`), matching what `list_reviews` returns (a full evipedia.ai URL is still accepted)

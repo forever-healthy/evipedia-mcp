@@ -1,6 +1,6 @@
 ---
 name: demo
-description: Demonstrate the evipedia MCP server end-to-end — confirms the build is loaded, shows the server-level instructions the model received on connect, walks through every read tool (get_version, search_reviews, list_reviews, get_review, get_conclusion) against live evipedia.ai data, then explains the one write tool without invoking it. Use to smoke-test or show off the MCP.
+description: Demonstrate the evipedia MCP server end-to-end — confirms the build is loaded, shows the server-level instructions the model received on connect, walks through every read tool (get_version, search_reviews, list_reviews, get_review, get_conclusion, get_metadata) against live evipedia.ai data, then explains the one write tool without invoking it. Use to smoke-test or show off the MCP.
 version: 26.7.06
 ---
 
@@ -24,8 +24,10 @@ Otherwise, run these steps in order and show the actual tool output for each, wi
 
 6. **Full review** — call `get_review` on the same slug. Don't dump the whole Markdown; show the first ~15 lines (frontmatter + opening) and note the total length, so the viewer sees it's the complete raw review.
 
-7. **Write path (describe, do NOT call)** — explain that `suggest_intervention(intervention, goal?, references?, email?)` submits a new intervention to evipedia's public suggestion form. Do **not** invoke it during the demo — it POSTs real data to the evipedia team. Only call it if the user explicitly asks to submit a suggestion.
+7. **Structured metadata** — call `get_metadata` on the same slug. Show the returned JSON and point out the fields the Markdown lacks: the review dates (`datePublished`/`dateModified`/`lastReviewed` — a freshness signal), the typed `about` entity with alternate names, and the ordered `citation` list with PubMed PMIDs.
 
-Close with a one-line summary: the server build from step 1, that the server-level instructions were present, and that search → list → conclusion → review all returned live data.
+8. **Write path (describe, do NOT call)** — explain that `suggest_intervention(intervention, goal?, references?, email?)` submits a new intervention to evipedia's public suggestion form. Do **not** invoke it during the demo — it POSTs real data to the evipedia team. Only call it if the user explicitly asks to submit a suggestion.
 
-**Arguments:** an optional topic (e.g. `/demo creatine`) used as the extra search in step 3 and, if it resolves to a review, as the slug for steps 5–6 instead of rapamycin.
+Close with a one-line summary: the server build from step 1, that the server-level instructions were present, and that search → list → conclusion → review → metadata all returned live data.
+
+**Arguments:** an optional topic (e.g. `/demo creatine`) used as the extra search in step 3 and, if it resolves to a review, as the slug for steps 5–7 instead of rapamycin.

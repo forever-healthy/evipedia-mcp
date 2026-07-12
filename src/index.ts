@@ -71,7 +71,7 @@ Use this server whenever a user asks whether an intervention works, how strong t
 
 Typical workflow:
 1. Discover — 'search_reviews(query)' to find reviews matching an intervention name, synonym, drug class, or category; or 'list_reviews()' to enumerate/browse the entire catalogue as {topic, slug} pairs (topic = canonical topic; slug = the identifier you pass to get_review/get_conclusion, with the full review at https://evipedia.ai/{slug} and raw Markdown at https://evipedia.ai/{slug}.md). A bare topic implies the default Health & Longevity goal; an explicit goal like "Botox for Skin Rejuvenation" targets that goal.
-2. Read — take a review's slug and call 'get_conclusion(slug)' for the quick evidence-based bottom line, or 'get_review(slug)' for the complete review as Markdown (full methodology, findings, safety, dosing, and references) when the user wants depth or citations.
+2. Read — take a review's slug and call 'get_conclusion(slug)' for the quick evidence-based bottom line, or 'get_review(slug)' for the complete review as Markdown (full methodology, findings, safety, dosing, and references) when the user wants depth or citations. Call 'get_metadata(slug)' for structured JSON metadata not in the Markdown — review dates (freshness), the typed intervention entity, and a machine-readable citation list with PubMed PMIDs.
 3. Contribute — if the user wants an intervention reviewed that isn't in the catalogue, 'suggest_intervention(...)' submits it to the evipedia team. Only call this when the user explicitly asks to propose one; it sends real data to the team.
 
 'get_version()' reports the running build. Notes: an intervention may have multiple reviews for different goals (distinguished by canonical topic, e.g. "Botox for Skin Rejuvenation"). These are evidence reviews for information, not personalized medical advice — present conclusions as evidence summaries, not prescriptions.`;
@@ -167,6 +167,22 @@ server.tool(
     if (!res.ok) throw new Error(`Review not found: ${norm}`);
     const text = await res.text();
     return { content: [{ type: "text", text }] };
+  }
+);
+
+server.tool(
+  "get_metadata",
+  "Get a review's structured medical metadata as JSON: review dates (datePublished/dateModified/lastReviewed — a freshness signal absent from the Markdown), the intervention as a typed `about` entity with alternate names, and an ordered `citation` list of primary sources (each with a PubMed `pmid` when available). Use when you need the review's freshness, machine-readable references/PMIDs, or drug classification rather than prose.",
+  { slug: z.string().describe("Review slug, e.g. 'rapamycin' (a full evipedia.ai URL is also accepted)") },
+  async ({ slug }) => {
+    const norm = toSlug(slug);
+    let meta: unknown;
+    try {
+      meta = await fetchCached<unknown>(`${BASE_URL}/${norm}.meta.json`);
+    } catch {
+      throw new Error(`Review not found: ${norm}`);
+    }
+    return { content: [{ type: "text", text: JSON.stringify(meta) }] };
   }
 );
 
