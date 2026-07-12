@@ -45,7 +45,7 @@ Requires Node.js ≥ 18.
 
 ### Try it
 
-In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection — it walks through the read tools (`get_version`, `search_reviews`, `get_review`, `get_conclusion`) against live evipedia.ai data.
+In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection — it walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
 
 
 ## Architecture
