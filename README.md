@@ -1,4 +1,4 @@
-![Version 0.1.14](https://img.shields.io/badge/Version-0.1.14-green.svg)
+![Version 0.1.15](https://img.shields.io/badge/Version-0.1.15-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)
 ![evipedia.ai](./docs/evipedia-header.png)
@@ -8,7 +8,7 @@
 A small [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents query [evipedia.ai](https://evipedia.ai) — our continuously-updated encyclopedia of evidence reviews on health & longevity interventions — and suggest new interventions for review.
 
 
-### Tools
+## Tools
 
 * `search_reviews(query)` → matching reviews (name/synonym/keyword/category), each with its URL and conclusion
 * `list_reviews()` → the full catalogue as `{topic, slug}` pairs (canonical topic + the slug you pass to `get_review`/`get_conclusion`)
@@ -44,7 +44,7 @@ Add the following to your MCP client's config:
 
 Requires Node.js ≥ 18.
 
-### Try it
+## Try it
 
 In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection — it walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
 
@@ -57,7 +57,7 @@ The server is a **thin client that only uses evipedia.ai's public endpoints**. I
 * Mostly read-only, no auth required. The one write path is `suggest_intervention`, which POSTs to evipedia's public suggestion form (Formspree)
 
 
-## Public API Surface
+### Public API Surface
 
 Base URL: `https://evipedia.ai`
 

@@ -33,23 +33,7 @@
       "version": "0.1.13",
       "transport": {
         "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "EVIPEDIA_BASE_URL",
-          "description": "Override the evipedia.ai base URL the server fetches reviews from.",
-          "isRequired": false,
-          "isSecret": false,
-          "default": "https://evipedia.ai"
-        },
-        {
-          "name": "EVIPEDIA_SUGGEST_ENDPOINT",
-          "description": "Override the endpoint that suggest_intervention submits to.",
-          "isRequired": false,
-          "isSecret": false,
-          "default": "https://formspree.io/f/myknrvdg"
-        }
-      ]
+      }
     }
   ]
 }
