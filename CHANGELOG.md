@@ -1,6 +1,11 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.15 — 2026-07-12
+
+* Removed the internal env-var overrides (`EVIPEDIA_BASE_URL`, `EVIPEDIA_SUGGEST_ENDPOINT`) from the MCP Registry listing — they are optional dev-only knobs users never need to set
+* Restructured the README headings (Tools, Install, Try it, Architecture › Public API Surface) and simplified the example config to bare `evipedia-mcp` (no `@latest` — `npx` already resolves the latest version)
+
 ### v0.1.14 — 2026-07-12
 
 * Enriched the MCP Registry listing with a display title (“Evipedia”), `websiteUrl`, and icons (SVG + 192/512 px PNG served from evipedia.ai)
