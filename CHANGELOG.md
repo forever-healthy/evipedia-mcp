@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.18 — 2026-07-15
+
+* Added a hosted **remote MCP server** over Streamable HTTP at [`https://mcp.evipedia.ai/mcp`](https://mcp.evipedia.ai/mcp) — web-based and non-terminal MCP clients can connect with just a URL, no local Node/`npx` install needed. It serves the same read + suggest tools as the stdio package
+
 ### v0.1.15 — 2026-07-12
 
 * Removed the internal env-var overrides (`EVIPEDIA_BASE_URL`, `EVIPEDIA_SUGGEST_ENDPOINT`) from the MCP Registry listing — they are optional dev-only knobs users never need to set

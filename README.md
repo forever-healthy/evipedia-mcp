@@ -1,5 +1,6 @@
-![Version 0.1.15](https://img.shields.io/badge/Version-0.1.15-green.svg)
+![Version](https://img.shields.io/badge/Version-0.1.18-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
+[![npm](https://img.shields.io/badge/npm-evipedia--mcp-cb3837.svg)](https://www.npmjs.com/package/evipedia-mcp)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)
 ![evipedia.ai](./docs/evipedia-header.png)
 
@@ -21,11 +22,11 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 * `get_version()` → the running server's package name and version
 
 
-## Install
+## Install (local or remote)
 
 The server is published to npm as **[`evipedia-mcp`](https://www.npmjs.com/package/evipedia-mcp)** and runs over stdio via `npx` — no global install needed. It's also listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp) as **`io.github.forever-healthy/evipedia-mcp`**, so MCP-aware clients can discover and install it automatically.
 
-Add the following to your MCP client's config:
+Client config: Local MCP (Requires Node.js ≥ 18)
 
 ```json
 {
@@ -38,15 +39,32 @@ Add the following to your MCP client's config:
 }
 ```
 
+For environments where a local install is not possible or desired, we also provide a hosted MCP server at [`https://mcp.evipedia.ai/`](https://mcp.evipedia.ai/) that can be used over HTTP.
+
+Client config: Remote MCP via HTTP
+
+```json
+{
+  "mcpServers": {
+    "evipedia": {
+      "type": "http",
+      "url": "https://mcp.evipedia.ai/mcp"
+    }
+  }
+}
+```
+
+
 - **Claude Code** — add to your project's `.mcp.json` (or run `claude mcp add`).
 - **Claude Desktop** — add to `claude_desktop_config.json`.
 - **Cursor** — add to the MCP settings.
 
-Requires Node.js ≥ 18.
 
 ## Try it
 
-In Claude Code, run the bundled **`/demo`** skill to smoke-test the connection — it walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
+You can use the bundled **`/demo`** skill to smoke-test the respective connection.
+
+It walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
 
 
 ## Architecture
