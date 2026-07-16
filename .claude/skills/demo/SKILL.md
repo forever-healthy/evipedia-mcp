@@ -6,15 +6,20 @@ version: 26.7.06
 
 # evipedia-mcp — Demo the MCP (`/demo`)
 
-Exercises the evipedia MCP server's tools live and narrates what each one does, so a viewer can see the server actually working against `https://evipedia.ai`. This is a demonstration/smoke-test, not a code test — it calls the real MCP tools that are connected in this session (the `mcp__evipedia__*` tools).
+Exercises the evipedia MCP server's tools live and narrates what each one does, so a viewer can see the server actually working against `https://evipedia.ai`. This is a demonstration/smoke-test, not a code test — it calls the real evipedia MCP tools connected in this session. Depending on how evipedia is reached, the tools appear under different prefixes but always share the same tail (`evipedia__<tool>`):
 
-If the `mcp__evipedia__*` tools are not available in this session, stop and tell the user the evipedia MCP server isn't connected — nothing to demo. (Check `.mcp.json` and that the server was approved.)
+- Connected directly (desktop): `mcp__evipedia__<tool>` — e.g. `mcp__evipedia__get_version`
+- Reached over the Cowork desktop bridge (cloud session): `mcp__remote-devices__plugin_evipedia_evipedia__<tool>` — e.g. `mcp__remote-devices__plugin_evipedia_evipedia__get_version`
+
+Both are the same server. Wherever a step below says call `get_version`, `search_reviews`, etc., use whichever prefixed form is actually present.
+
+If no evipedia tool is available under ANY prefix — i.e. nothing whose name ends in `evipedia__get_version` (or the other evipedia tool names) — stop and tell the user the evipedia MCP server isn't connected; there's nothing to demo. (Check `.mcp.json` and that the server was approved.) Do NOT conclude it's disconnected just because `mcp__evipedia__*` is absent — also look for the bridged `mcp__remote-devices__plugin_evipedia_evipedia__*` form before giving up.
 
 Otherwise, run these steps in order and show the actual tool output for each, with a one-line explanation before each call.
 
 1. **Which build is loaded** — call `get_version`. Report the package name and version it returns. This confirms the server is up and tells you whether it's the public (`evipedia-mcp`) or dev (`evipedia-mcp-dev`) build.
 
-2. **What the server told the model** — show the evipedia server's **server-level instructions**: the overview block the MCP sends at connect (its `instructions` field), which is what the model reads before using any tool. You already have it in context as this session's evipedia "MCP Server Instructions" — quote or tightly summarize it, pointing out that it explains what evipedia is, when to reach for it, and the discover → read → contribute workflow. This proves the server is self-describing, not just a bag of tools. If no evipedia server instructions are present in context, say so plainly — that means the connected build predates them (an old server), which is itself a useful smoke-test signal.
+2. **What the server told the model** — show the evipedia server's **server-level instructions**: the overview block the MCP sends at connect (its `instructions` field), which is what the model reads before using any tool. You already have it in context as this session's evipedia "MCP Server Instructions" — quote or tightly summarize it, pointing out that it explains what evipedia is, when to reach for it, and the discover → read → contribute workflow. This proves the server is self-describing, not just a bag of tools. If no evipedia server instructions are present in context, say so plainly. Note: when evipedia is reached over the bridge, the server-level instructions may not be surfaced even on a current build — so don't assume an old server; check step 1's version first. Current version + no instructions in context most likely means the bridge didn't forward them, not an outdated build.
 
 3. **Search** — call `search_reviews` with `query: "rapamycin"`. Show the matching review(s) and their URLs. Then run one more search of the user's choice if they named a topic in the `/demo` args (e.g. `/demo creatine`); otherwise skip the second search.
 
