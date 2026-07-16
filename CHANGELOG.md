@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.21 — 2026-07-16
+
+* Rebuilt `search_reviews` (and the hosted `GET /search`) on **Lunr**, configured identically to the evipedia.ai homepage search — same fields, boosts, and ranking, so the MCP tool, the REST endpoint, and the website return consistent results. Fixes natural-language queries that previously returned nothing: e.g. "low-level light therapy for skin rejuvenation" now finds the Skin review, and "vitamin d" ranks Vitamin D first
+
 ### v0.1.18 — 2026-07-15
 
 * Added a hosted **remote MCP server** over Streamable HTTP at [`https://mcp.evipedia.ai/mcp`](https://mcp.evipedia.ai/mcp) — web-based and non-terminal MCP clients can connect with just a URL, no local Node/`npx` install needed. It serves the same read + suggest tools as the stdio package
