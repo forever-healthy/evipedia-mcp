@@ -40,7 +40,6 @@ interface SearchEntry {
   // (reviews.json uses an array for the same field).
   alternate_names: string;
   ep_keywords: string;
-  ep_category: string;
   url: string;
 }
 
@@ -91,7 +90,6 @@ function buildLunrIndex(searchIndex: SearchEntry[]): lunr.Index {
     this.field("short_topic", { boost: 15 });
     this.field("alternate_names", { boost: 10 });
     this.field("ep_keywords", { boost: 8 });
-    this.field("ep_category", { boost: 3 });
     for (const doc of searchIndex) this.add(doc as unknown as object);
   });
   lunrCache = { key: searchIndex, idx };
@@ -127,12 +125,17 @@ function runLunrQuery(idx: lunr.Index, query: string): lunr.Index.Result[] {
 // Ranked search over the evipedia review indexes, shared by the `search_reviews`
 // MCP tool and the REST `GET /search?q=` endpoint. This is a DISCOVERY tool — it
 // answers "does an evidence review exist for this?", returning a compact list of
-// matches ranked by Lunr relevance (name + URL + category), capped at `limit`. It
-// deliberately does NOT return conclusions: reading a review is get_conclusion /
-// get_review's job (or fetching {slug}.md), so a search never balloons into 20
-// full conclusions.
+// matches ranked by Lunr relevance (topic + URL), capped at `limit`. It reports
+// the full canonical `topic` verbatim (e.g. "Vitamin D for Health & Longevity",
+// "Low-Level Light Therapy for Skin Rejuvenation"), not the bare intervention
+// name — otherwise the four LLLT reviews would all read "Low-Level Light Therapy"
+// and be indistinguishable. This matches the evipedia site's OpenAPI/integration
+// docs.
+// `category` is omitted (it's an internal taxonomy, meaningless externally) and
+// so are conclusions: reading a review is get_conclusion / get_review's job (or
+// fetching {slug}.md), so a search never balloons into 20 full conclusions.
 export async function searchReviews(query: string, limit = 20): Promise<
-  Array<{ name: string; url: string; category?: string }>
+  Array<{ topic: string; url: string }>
 > {
   const [searchIndex, reviewsIndex] = await Promise.all([
     fetchCached<SearchEntry[]>(`${BASE_URL}/search.json`),
@@ -151,10 +154,13 @@ export async function searchReviews(query: string, limit = 20): Promise<
   return hits.map(res => {
     const review = bySlug.get(toSlug(res.ref).toLowerCase());
     if (review) {
-      return { name: review.canonical_name, url: review.permalink, category: review.category };
+      // Full canonical_topic verbatim (WITH the trailing " for Health & Longevity"),
+      // e.g. "Vitamin D for Health & Longevity" — matches the evipedia site's
+      // OpenAPI (SearchResult.topic) and /integration docs. Do NOT strip the goal.
+      return { topic: review.canonical_topic, url: review.permalink };
     }
     const e = byUrl.get(res.ref);
-    return { name: e?.short_topic ?? res.ref, url: e?.url ?? res.ref, category: e?.ep_category };
+    return { topic: e?.short_topic ?? res.ref, url: e?.url ?? res.ref };
   });
 }
 
@@ -169,14 +175,14 @@ export function createServer(): McpServer {
 
   server.tool(
     "search_reviews",
-    "Search evipedia.ai evidence reviews by name, synonym, keyword, or category. A discovery tool: returns the matching reviews (name + URL) ranked by relevance so you can tell whether a review exists. To read one, pass its slug to get_conclusion (quick bottom line) or get_review (full Markdown).",
+    "Search evipedia.ai evidence reviews by name, synonym, keyword, or category. A discovery tool: returns the matching reviews (goal-qualified topic + URL) ranked by relevance so you can tell whether a review exists. To read one, pass its slug to get_conclusion (quick bottom line) or get_review (full Markdown).",
     { query: z.string().describe("Search query — intervention name, synonym, drug class, or category") },
     async ({ query }) => {
       const matches = await searchReviews(query);
       if (matches.length === 0) {
         return { content: [{ type: "text", text: "No reviews found." }] };
       }
-      const text = matches.map(m => `**${m.name}** — ${m.url}`).join("\n");
+      const text = matches.map(m => `**${m.topic}** — ${m.url}`).join("\n");
       return { content: [{ type: "text", text }] };
     }
   );

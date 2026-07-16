@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.26 — 2026-07-16
+
+* `search_reviews` / `GET /search` results now report the **full canonical topic** verbatim (e.g. "Vitamin D for Health & Longevity", "Low-Level Light Therapy for Skin Rejuvenation") instead of the bare intervention name, so multiple reviews of the same intervention are distinguishable and the shape matches the evipedia site's search API. Dropped the internal `category` field. Each hit is now simply `{topic, url}`
+
 ### v0.1.23 — 2026-07-16
 
 * Made `search_reviews` (and the REST `GET /search`) **discovery-only**: they now return the matching reviews (name + URL, ranked by relevance) so you can tell whether a review exists, instead of embedding each match's full conclusion. Results are ~15× smaller for broad queries; read a specific review with `get_conclusion`/`get_review` (MCP) or `https://evipedia.ai/{slug}.md`
