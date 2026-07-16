@@ -1,7 +1,7 @@
 ---
 name: demo
 description: Demonstrate the evipedia MCP server end-to-end — confirms the build is loaded, shows the server-level instructions the model received on connect, walks through every read tool (get_version, search_reviews, list_reviews, get_review, get_conclusion, get_metadata) against live evipedia.ai data, then explains the one write tool without invoking it. Use to smoke-test or show off the MCP.
-version: 26.7.06
+version: 0.1.18
 ---
 
 # evipedia-mcp — Demo the MCP (`/demo`)
