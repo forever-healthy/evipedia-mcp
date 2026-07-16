@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.22 — 2026-07-16
+
+* Hosted server ([`mcp.evipedia.ai`](https://mcp.evipedia.ai)): added permissive **CORS** headers (with `OPTIONS` preflight) so browser-based clients can call the REST `GET /search` and the `/mcp` endpoint cross-origin, and added lightweight **per-IP rate limiting** (default 60 requests/minute) to `/search` and `/mcp`. Health checks and the stdio package are unaffected
+
 ### v0.1.21 — 2026-07-16
 
 * Rebuilt `search_reviews` (and the hosted `GET /search`) on **Lunr**, configured identically to the evipedia.ai homepage search — same fields, boosts, and ranking, so the MCP tool, the REST endpoint, and the website return consistent results. Fixes natural-language queries that previously returned nothing: e.g. "low-level light therapy for skin rejuvenation" now finds the Skin review, and "vitamin d" ranks Vitamin D first

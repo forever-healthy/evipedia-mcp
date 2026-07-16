@@ -1,6 +1,6 @@
 {
   "name": "evipedia-mcp",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "MCP Server for evipedia.ai — evidence-based reviews of health & longevity interventions",
   "type": "module",
   "bin": {
