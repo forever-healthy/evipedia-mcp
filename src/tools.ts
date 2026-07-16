@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { readFileSync } from "node:fs";
+import lunr from "lunr";
 import { z } from "zod";
 
 // Read our own name/version from the package.json shipped alongside dist/,
@@ -74,9 +75,57 @@ Typical workflow:
 
 'get_version()' reports the running build. Notes: an intervention may have multiple reviews for different goals (distinguished by canonical topic, e.g. "Botox for Skin Rejuvenation"). These are evidence reviews for information, not personalized medical advice — present conclusions as evidence summaries, not prescriptions.`;
 
+// Build a Lunr index over the search.json rows, configured IDENTICALLY to
+// evipedia.ai's client-side homepage search (same fields + boosts, stemmer off),
+// so the server's search_reviews tool and REST /search rank exactly like the
+// site. Cached per fetched index array (fetchCached returns a stable reference
+// within its TTL), since building the index over the full catalogue each call
+// would be wasteful.
+let lunrCache: { key: SearchEntry[]; idx: lunr.Index } | null = null;
+function buildLunrIndex(searchIndex: SearchEntry[]): lunr.Index {
+  if (lunrCache && lunrCache.key === searchIndex) return lunrCache.idx;
+  const idx = lunr(function (this: lunr.Builder) {
+    this.pipeline.remove(lunr.stemmer);
+    this.searchPipeline.remove(lunr.stemmer);
+    this.ref("url");
+    this.field("short_topic", { boost: 15 });
+    this.field("alternate_names", { boost: 10 });
+    this.field("ep_keywords", { boost: 8 });
+    this.field("ep_category", { boost: 3 });
+    for (const doc of searchIndex) this.add(doc as unknown as object);
+  });
+  lunrCache = { key: searchIndex, idx };
+  return idx;
+}
+
+// The query builder — the piece to keep in lockstep with the homepage. Each
+// query term is matched three ways so a full exact-term hit outranks incidental
+// prefix noise: exact (high boost), trailing-prefix wildcard (medium), and
+// edit-distance-1 fuzzy (low). This fixes the homepage's plain `search(q + '*')`,
+// where e.g. "vitamin d" → "d*" let every "d…" review outrank "Vitamin D".
+// Browser-safe: only Lunr's public API plus a plain split on Lunr's default
+// separator (/[\s-]+/), so the same function runs client-side unchanged.
+function runLunrQuery(idx: lunr.Index, query: string): lunr.Index.Result[] {
+  const terms = query.toLowerCase().split(/[\s\-]+/).filter(Boolean);
+  if (terms.length === 0) return [];
+  try {
+    return idx.query(q => {
+      for (const t of terms) {
+        q.term(t, { boost: 100 });
+        q.term(t, { boost: 10, wildcard: lunr.Query.wildcard.TRAILING });
+        q.term(t, { boost: 1, editDistance: 1 });
+      }
+    });
+  } catch {
+    // Lunr can throw on reserved query characters; treat as no match.
+    return [];
+  }
+}
+
 // Ranked search over the evipedia review indexes, shared by the `search_reviews`
-// MCP tool and (later) the REST `GET /search?q=` endpoint. Returns the joined
-// review entries for matching search-index rows, capped at `limit`.
+// MCP tool and the REST `GET /search?q=` endpoint. Returns the joined review
+// entries for matching search-index rows, ranked by Lunr relevance, capped at
+// `limit`.
 export async function searchReviews(query: string, limit = 20): Promise<
   Array<{ name: string; url: string; conclusion?: string; category?: string }>
 > {
@@ -89,23 +138,18 @@ export async function searchReviews(query: string, limit = 20): Promise<
   // inconsistent casing across entries, so key/lookup on the reliable
   // lowercase `url` slug instead, case-insensitively.
   const bySlug = new Map(reviewsIndex.map(r => [toSlug(r.permalink).toLowerCase(), r]));
+  const byUrl = new Map(searchIndex.map(e => [e.url, e]));
 
-  const q = query.toLowerCase();
-  // Any of these fields may be null/absent in search.json (e.g. ep_keywords
-  // is null for ~46% of entries), so coerce before lowercasing.
-  const has = (v: string | null | undefined) => (v ?? "").toLowerCase().includes(q);
-  const matches = searchIndex.filter(e =>
-    has(e.short_topic) ||
-    has(e.alternate_names) ||
-    has(e.ep_keywords) ||
-    has(e.ep_category)
-  );
+  const idx = buildLunrIndex(searchIndex);
+  const results = runLunrQuery(idx, query);
 
-  return matches.slice(0, limit).map(e => {
-    const r = bySlug.get(toSlug(e.url).toLowerCase());
-    return r
-      ? { name: r.canonical_name, url: r.permalink, conclusion: r.er_conclusion, category: r.category }
-      : { name: e.short_topic, url: e.url, category: e.ep_category };
+  return results.slice(0, limit).map(res => {
+    const review = bySlug.get(toSlug(res.ref).toLowerCase());
+    if (review) {
+      return { name: review.canonical_name, url: review.permalink, conclusion: review.er_conclusion, category: review.category };
+    }
+    const e = byUrl.get(res.ref);
+    return { name: e?.short_topic ?? res.ref, url: e?.url ?? res.ref, category: e?.ep_category };
   });
 }
 

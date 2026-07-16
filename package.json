@@ -1,6 +1,6 @@
 {
   "name": "evipedia-mcp",
-  "version": "0.1.18",
+  "version": "0.1.20",
   "description": "MCP Server for evipedia.ai — evidence-based reviews of health & longevity interventions",
   "type": "module",
   "bin": {
@@ -19,9 +19,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "lunr": "^2.3.9",
     "zod": "^3.0.0"
   },
   "devDependencies": {
+    "@types/lunr": "^2.3.7",
     "@types/node": "^20.0.0",
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",
