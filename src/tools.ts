@@ -113,7 +113,9 @@ function runLunrQuery(idx: lunr.Index, query: string): lunr.Index.Result[] {
       for (const t of terms) {
         q.term(t, { boost: 100 });
         q.term(t, { boost: 10, wildcard: lunr.Query.wildcard.TRAILING });
-        q.term(t, { boost: 1, editDistance: 1 });
+        // Fuzzy only on tokens long enough to be specific — an edit-distance-1
+        // match on a 1–2 char token (e.g. a lone "d") matches half the catalogue.
+        if (t.length >= 3) q.term(t, { boost: 1, editDistance: 1 });
       }
     });
   } catch {
