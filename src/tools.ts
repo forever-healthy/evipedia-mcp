@@ -125,11 +125,14 @@ function runLunrQuery(idx: lunr.Index, query: string): lunr.Index.Result[] {
 }
 
 // Ranked search over the evipedia review indexes, shared by the `search_reviews`
-// MCP tool and the REST `GET /search?q=` endpoint. Returns the joined review
-// entries for matching search-index rows, ranked by Lunr relevance, capped at
-// `limit`.
+// MCP tool and the REST `GET /search?q=` endpoint. This is a DISCOVERY tool — it
+// answers "does an evidence review exist for this?", returning a compact list of
+// matches ranked by Lunr relevance (name + URL + category), capped at `limit`. It
+// deliberately does NOT return conclusions: reading a review is get_conclusion /
+// get_review's job (or fetching {slug}.md), so a search never balloons into 20
+// full conclusions.
 export async function searchReviews(query: string, limit = 20): Promise<
-  Array<{ name: string; url: string; conclusion?: string; category?: string }>
+  Array<{ name: string; url: string; category?: string }>
 > {
   const [searchIndex, reviewsIndex] = await Promise.all([
     fetchCached<SearchEntry[]>(`${BASE_URL}/search.json`),
@@ -143,12 +146,12 @@ export async function searchReviews(query: string, limit = 20): Promise<
   const byUrl = new Map(searchIndex.map(e => [e.url, e]));
 
   const idx = buildLunrIndex(searchIndex);
-  const results = runLunrQuery(idx, query);
+  const hits = runLunrQuery(idx, query).slice(0, limit);
 
-  return results.slice(0, limit).map(res => {
+  return hits.map(res => {
     const review = bySlug.get(toSlug(res.ref).toLowerCase());
     if (review) {
-      return { name: review.canonical_name, url: review.permalink, conclusion: review.er_conclusion, category: review.category };
+      return { name: review.canonical_name, url: review.permalink, category: review.category };
     }
     const e = byUrl.get(res.ref);
     return { name: e?.short_topic ?? res.ref, url: e?.url ?? res.ref, category: e?.ep_category };
@@ -166,16 +169,14 @@ export function createServer(): McpServer {
 
   server.tool(
     "search_reviews",
-    "Search evipedia.ai evidence reviews by name, synonym, keyword, or category. Returns matching reviews with their URLs and conclusions.",
+    "Search evipedia.ai evidence reviews by name, synonym, keyword, or category. A discovery tool: returns the matching reviews (name + URL) ranked by relevance so you can tell whether a review exists. To read one, pass its slug to get_conclusion (quick bottom line) or get_review (full Markdown).",
     { query: z.string().describe("Search query — intervention name, synonym, drug class, or category") },
     async ({ query }) => {
       const matches = await searchReviews(query);
       if (matches.length === 0) {
         return { content: [{ type: "text", text: "No reviews found." }] };
       }
-      const text = matches
-        .map(m => m.conclusion ? `**${m.name}** — ${m.url}\n${m.conclusion}` : `**${m.name}** — ${m.url}`)
-        .join("\n\n---\n\n");
+      const text = matches.map(m => `**${m.name}** — ${m.url}`).join("\n");
       return { content: [{ type: "text", text }] };
     }
   );

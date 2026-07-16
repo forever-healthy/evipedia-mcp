@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-0.1.22-green.svg)
+![Version](https://img.shields.io/badge/Version-0.1.23-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 [![npm](https://img.shields.io/badge/npm-evipedia--mcp-cb3837.svg)](https://www.npmjs.com/package/evipedia-mcp)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)

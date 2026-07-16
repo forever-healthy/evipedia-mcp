@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.23 — 2026-07-16
+
+* Made `search_reviews` (and the REST `GET /search`) **discovery-only**: they now return the matching reviews (name + URL, ranked by relevance) so you can tell whether a review exists, instead of embedding each match's full conclusion. Results are ~15× smaller for broad queries; read a specific review with `get_conclusion`/`get_review` (MCP) or `https://evipedia.ai/{slug}.md`
+
 ### v0.1.22 — 2026-07-16
 
 * Hosted server ([`mcp.evipedia.ai`](https://mcp.evipedia.ai)): added permissive **CORS** headers (with `OPTIONS` preflight) so browser-based clients can call the REST `GET /search` and the `/mcp` endpoint cross-origin, and added lightweight **per-IP rate limiting** (default 60 requests/minute) to `/search` and `/mcp`. Health checks and the stdio package are unaffected
