@@ -12,7 +12,7 @@ If no evipedia MCP tools are available in this session, stop and tell the user t
 
 Otherwise, run these steps in order and show the actual tool output for each, with a one-line explanation before each call.
 
-1. **Which build is loaded** — call `get_version`. Report the package name and version it returns (the public `evipedia-mcp` or the dev `evipedia-mcp-dev` build).
+1. **Which build is loaded** — call `get_version`. Report the package name and version it returns.
 
 2. **What the server told the model** — show the evipedia server's **server-level instructions**: the overview block the MCP sends at connect (its `instructions` field), which is what the model reads before using any tool. You already have it in context as this session's evipedia "MCP Server Instructions" — quote or tightly summarize it (what evipedia is, when to reach for it, and the discover → read → contribute workflow). If no evipedia instructions are present in context, say so plainly.
 
