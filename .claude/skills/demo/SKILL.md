@@ -20,7 +20,7 @@ Otherwise, run these steps in order and show the actual tool output for each, wi
 
 4. **Full catalogue** — call `list_reviews` (no arguments). It returns every review as a `{topic, slug}` pair. Don't dump all of it; report the total count and show the first 3 entries.
 
-5. **What's new** — call `list_updates` with `days: 7`. It returns the catalogue's change feed, newest first, as `{title, slug, status, date}` — `status` is `new` (first publication) or `updated` (an existing review revised). Report how many reviews changed in the last 7 days and show the first 3. Then call it with no arguments and report the total number of entries in the full history, to show `days` is the narrowing filter.
+5. **What's new** — call `list_updates` with `days: 7`. It returns the catalogue's change feed, newest first, as `{title, slug, status, date}` — `status` is `new` (first publication) or `updated` (an existing review revised). Report how many reviews changed in the last 7 days and show the first 3. Then call it with **no arguments** and point out that you get the *same* 7-day window plus a `Default window:` note — since 0.1.28 the bare call is bounded (last 7 days, at most 100 entries) rather than the entire feed. Finally call `days: 14` and report that the count grows, showing `days` widens the window as well as narrows it. Do **not** demo a very wide window: `days: 365` returns the whole 600+ entry catalogue (~15k tokens) and can exceed a client's tool-result limit — mention that instead of calling it.
 
 6. **Conclusion only** — take the top review's slug from step 3 (e.g. `rapamycin`) and call `get_conclusion` on it. Show the plain-text conclusion. Point out this is the quick-answer path versus the full review in step 7.
 
