@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.28 — 2026-08-19
+
+* Added `list_updates(days?)` — the catalogue's change feed, newest first, backed by evipedia.ai's new `/updates.json`. Returns `{title, slug, status, date}` per entry, where `status` is `new` (first publication) or `updated` (an existing review revised). Called with no arguments it returns the **last 7 days, capped at 100 entries** (the raw feed spans the whole catalogue — 600+ rows, ~15k tokens, nearly all of it months old); pass `days` for a wider window. Answers recency questions — "what's new on evipedia?", "anything updated this week?" — that previously had no tool
+
 ### v0.1.26 — 2026-07-16
 
 * `search_reviews` / `GET /search` results now report the **full canonical topic** verbatim (e.g. "Vitamin D for Health & Longevity", "Low-Level Light Therapy for Skin Rejuvenation") instead of the bare intervention name, so multiple reviews of the same intervention are distinguishable and the shape matches the evipedia site's search API. Dropped the internal `category` field. Each hit is now simply `{topic, url}`

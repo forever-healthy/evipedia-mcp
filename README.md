@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-0.1.26-green.svg)
+![Version](https://img.shields.io/badge/Version-0.1.28-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 [![npm](https://img.shields.io/badge/npm-evipedia--mcp-cb3837.svg)](https://www.npmjs.com/package/evipedia-mcp)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)
@@ -13,6 +13,7 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 
 * `search_reviews(query)` → matching reviews (name/synonym/keyword/category), each with its URL and conclusion
 * `list_reviews()` → the full catalogue as `{topic, slug}` pairs (canonical topic + the slug you pass to `get_review`/`get_conclusion`)
+* `list_updates(days?)` → the change feed, newest first: `{title, slug, status, date}` per recently published (`new`) or revised (`updated`) review. With no arguments it returns the last 7 days, capped at 100 entries; pass `days` for a wider window (e.g. `days: 30`)
 * `get_conclusion(slug|url)` → just the review's plain-text conclusion
 * `get_review(slug|url)` → the full review as raw Markdown
 * `get_metadata(slug|url)` → structured medical metadata as JSON — review dates (`datePublished`/`dateModified`/`lastReviewed`, a freshness signal not in the Markdown), the typed `about` entity with alternate names, and an ordered `citation` list with PubMed PMIDs
@@ -64,7 +65,7 @@ Client config: Remote MCP via HTTP
 
 You can use the bundled **`/demo`** skill to smoke-test the respective connection.
 
-It walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
+It walks through the read tools (`get_version`, `search_reviews`, `list_reviews`, `list_updates`, `get_review`, `get_conclusion`, `get_metadata`) against live evipedia.ai data.
 
 
 ## Architecture
@@ -83,6 +84,7 @@ Base URL: `https://evipedia.ai`
 |---|---|
 | `GET /reviews.json` | Full catalogue: `canonical_name`, `alternate_names[]`, `permalink`, `permalink_md`, `permalink_meta`, `category`, `creation_date`, `dateModified`, `lastReviewed`, `er_conclusion` |
 | `GET /search.json` | Search index: `short_topic`, `alternate_names`, `ep_keywords`, `ep_category`, `url` |
+| `GET /updates.json` | Change feed, newest first: `title`, `permalink`, `status` (`new`/`updated`), `date` |
 | `GET /{permalink}.md` | Complete review as raw Markdown (frontmatter + full body) |
 | `GET /{permalink}.meta.json` | Flattened medical metadata: `slug`, `topic`, `url`, `datePublished`/`dateModified`/`lastReviewed`, `about` (`type`/`name`/`alternateName`), ordered `citation[]` (`name`, `url`, `pmid?`) |
 | `GET /llms.txt` | Agent/human signpost — includes the stable section anchor list |

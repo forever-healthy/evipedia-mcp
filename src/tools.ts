@@ -19,6 +19,10 @@ const BASE_URL = (process.env.EVIPEDIA_BASE_URL ?? "https://evipedia.ai").replac
 // Overridable so the tool can be exercised without hitting the live form.
 const SUGGEST_ENDPOINT = process.env.EVIPEDIA_SUGGEST_ENDPOINT ?? "https://formspree.io/f/myknrvdg";
 const CACHE_TTL = 5 * 60 * 1000;
+// Defaults for list_updates when the caller names no window. The feed covers the
+// entire catalogue, so an unbounded answer is both useless and too large to return.
+const DEFAULT_UPDATE_DAYS = 7;
+const DEFAULT_UPDATE_MAX = 100;
 
 interface CacheEntry<T> { data: T; ts: number }
 const cache = new Map<string, CacheEntry<unknown>>();
@@ -54,6 +58,17 @@ interface ReviewEntry {
   er_conclusion: string;
 }
 
+// One row of /updates.json — the same catalogue the site's /updates page shows,
+// newest first. `title` is the review's short topic (goal-qualified in
+// parentheses for goal-specific reviews, e.g. "Low-Level Light Therapy (Skin)"),
+// `date` is a plain YYYY-MM-DD publication/update date (no time component).
+interface UpdateEntry {
+  title: string;
+  permalink: string;
+  status: "new" | "updated";
+  date: string;
+}
+
 function toSlug(input: string): string {
   const path = input.startsWith("http") ? new URL(input).pathname : input;
   return path.replace(/\.md$/, "").replace(/^\//, "");
@@ -69,8 +84,9 @@ Use this server whenever a user asks whether an intervention works, how strong t
 
 Typical workflow:
 1. Discover — 'search_reviews(query)' to find reviews matching an intervention name, synonym, drug class, or category; or 'list_reviews()' to enumerate/browse the entire catalogue as {topic, slug} pairs (topic = canonical topic; slug = the identifier you pass to get_review/get_conclusion, with the full review at https://evipedia.ai/{slug} and raw Markdown at https://evipedia.ai/{slug}.md). A bare topic implies the default Health & Longevity goal; an explicit goal like "Botox for Skin Rejuvenation" targets that goal.
-2. Read — take a review's slug and call 'get_conclusion(slug)' for the quick evidence-based bottom line, or 'get_review(slug)' for the complete review as Markdown (full methodology, findings, safety, dosing, and references) when the user wants depth or citations. Call 'get_metadata(slug)' for structured JSON metadata not in the Markdown — review dates (freshness), the typed intervention entity, and a machine-readable citation list with PubMed PMIDs.
-3. Contribute — if the user wants an intervention reviewed that isn't in the catalogue, 'suggest_intervention(...)' submits it to the evipedia team. Only call this when the user explicitly asks to propose one; it sends real data to the team.
+2. Track changes — 'list_updates(days?)' returns the catalogue's change feed, newest first: which reviews were newly published ('new') or revised ('updated') and when. Use it for recency questions ("what's new on evipedia?", "anything updated this week?"). With no arguments it covers the last 7 days (max 100 entries); pass 'days' for a wider window.
+3. Read — take a review's slug and call 'get_conclusion(slug)' for the quick evidence-based bottom line, or 'get_review(slug)' for the complete review as Markdown (full methodology, findings, safety, dosing, and references) when the user wants depth or citations. Call 'get_metadata(slug)' for structured JSON metadata not in the Markdown — review dates (freshness), the typed intervention entity, and a machine-readable citation list with PubMed PMIDs.
+4. Contribute — if the user wants an intervention reviewed that isn't in the catalogue, 'suggest_intervention(...)' submits it to the evipedia team. Only call this when the user explicitly asks to propose one; it sends real data to the team.
 
 'get_version()' reports the running build. Notes: an intervention may have multiple reviews for different goals (distinguished by canonical topic, e.g. "Botox for Skin Rejuvenation"). These are evidence reviews for information, not personalized medical advice — present conclusions as evidence summaries, not prescriptions.`;
 
@@ -206,6 +222,58 @@ export function createServer(): McpServer {
       }));
 
       return { content: [{ type: "text", text: JSON.stringify(list) }] };
+    }
+  );
+
+  server.tool(
+    "list_updates",
+    "List recently published or revised evipedia.ai reviews, newest first — the catalogue's change feed. Returns a JSON array of {title, slug, status, date}, where status is 'new' (first publication) or 'updated' (an existing review revised) and date is YYYY-MM-DD. Called with no arguments it returns the last 7 days (at most 100 entries); pass `days` for a different window, e.g. days: 30. The full review is at https://evipedia.ai/{slug}, and get_conclusion/get_review take the slug. Use this for recency ('what's new?'); use list_reviews to enumerate the whole catalogue and search_reviews to find a specific intervention.",
+    {
+      days: z.number().int().positive().optional()
+        .describe("Only include reviews dated on or after (today − N days), e.g. 7 for the past week. Omit to use the default 7-day window. The catalogue turns over quickly — a large window returns hundreds of entries."),
+    },
+    async ({ days }) => {
+      const updates = await fetchCached<UpdateEntry[]>(`${BASE_URL}/updates.json`);
+
+      // Bounded default: the feed covers the whole catalogue (600+ rows, ~57KB,
+      // ~15k tokens). How a client reacts to a result that size varies — some
+      // cap it and hand the model an error, some truncate, some pass it all
+      // through — but in every case it spends a large slice of the context
+      // window to answer "what's new?", and most of it is months old. With no
+      // `days` given, answer the question actually asked: the last week, capped
+      // at 100 rows. An explicit `days` is honoured as given.
+      const windowDays = days ?? DEFAULT_UPDATE_DAYS;
+
+      // Dates are plain YYYY-MM-DD with no time or zone, so compare them as
+      // strings against a cutoff formatted the same way — no timezone maths and
+      // no Date parsing per row. The window is inclusive of the cutoff day.
+      const cutoff = new Date(Date.now() - windowDays * 86_400_000).toISOString().slice(0, 10);
+
+      // The feed already arrives newest-first; sort defensively so callers can
+      // rely on the order even if the site's ordering ever changes.
+      const matched = updates
+        .filter(u => u.date >= cutoff)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      const rows = days === undefined ? matched.slice(0, DEFAULT_UPDATE_MAX) : matched;
+      const list = rows.map(u => ({
+        title: u.title,
+        slug: toSlug(u.permalink),
+        status: u.status,
+        date: u.date,
+      }));
+
+      const window = windowDays === 1 ? "day" : `${windowDays} days`;
+      if (list.length === 0) {
+        return { content: [{ type: "text", text: `Nothing has been published or updated on evipedia in the last ${window}.` }] };
+      }
+
+      // Spell out the defaults whenever they were applied, so a partial answer
+      // is never mistaken for the complete change history.
+      const note = days === undefined
+        ? `\n\nDefault window: the last ${window}${matched.length > list.length ? `, capped at the ${list.length} most recent of ${matched.length} entries` : ""}. Pass \`days\` for a wider window.`
+        : "";
+      return { content: [{ type: "text", text: JSON.stringify(list) + note }] };
     }
   );
 
