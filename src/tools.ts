@@ -86,7 +86,7 @@ Typical workflow:
 1. Discover — 'search_reviews(query)' to find reviews matching an intervention name, synonym, drug class, or category; or 'list_reviews()' to enumerate/browse the entire catalogue as {topic, slug} pairs (topic = canonical topic; slug = the identifier you pass to get_review/get_conclusion, with the full review at https://evipedia.ai/{slug} and raw Markdown at https://evipedia.ai/{slug}.md). A bare topic implies the default Health & Longevity goal; an explicit goal like "Botox for Skin Rejuvenation" targets that goal.
 2. Track changes — 'list_updates(days?)' returns the catalogue's change feed, newest first: which reviews were newly published ('new') or revised ('updated') and when. Use it for recency questions ("what's new on evipedia?", "anything updated this week?"). With no arguments it covers the last 7 days (max 100 entries); pass 'days' for a wider window.
 3. Read — take a review's slug and call 'get_conclusion(slug)' for the quick evidence-based bottom line, or 'get_review(slug)' for the complete review as Markdown (full methodology, findings, safety, dosing, and references) when the user wants depth or citations. Call 'get_metadata(slug)' for structured JSON metadata not in the Markdown — review dates (freshness), the typed intervention entity, and a machine-readable citation list with PubMed PMIDs.
-4. Contribute — if the user wants an intervention reviewed that isn't in the catalogue, 'suggest_intervention(...)' submits it to the evipedia team. Only call this when the user explicitly asks to propose one; it sends real data to the team.
+4. Contribute — if the user wants an intervention reviewed that isn't in the catalogue, 'suggest_review(...)' submits it to the evipedia team. Only call this when the user explicitly asks to propose one; it sends real data to the team.
 
 'get_version()' reports the running build. Notes: an intervention may have multiple reviews for different goals (distinguished by canonical topic, e.g. "Botox for Skin Rejuvenation"). These are evidence reviews for information, not personalized medical advice — present conclusions as evidence summaries, not prescriptions.`;
 
@@ -320,8 +320,8 @@ export function createServer(): McpServer {
   );
 
   server.tool(
-    "suggest_intervention",
-    "Suggest a new intervention for evipedia.ai to review. Submits to evipedia's public suggestion form (the same one at evipedia.ai/suggest). Use only when the user explicitly wants to propose a new intervention — this sends a message to the evipedia team.",
+    "suggest_review",
+    "Suggest a new review for evipedia.ai — propose an intervention the catalogue doesn't cover yet. Submits to evipedia's public suggestion form (the same one at evipedia.ai/suggest). Use only when the user explicitly wants to propose a new review — this sends a message to the evipedia team.",
     {
       intervention: z.string().min(1).describe("Name of the intervention to suggest (e.g. 'Urolithin A')"),
       goal: z.string().optional().describe("Optional health or longevity goal the intervention targets"),

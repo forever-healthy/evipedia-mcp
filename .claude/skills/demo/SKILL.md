@@ -1,7 +1,7 @@
 ---
 name: demo
 description: Demonstrate the evipedia MCP server end-to-end — confirms the build is loaded, shows the server-level instructions the model received on connect, walks through every read tool (get_version, search_reviews, list_reviews, list_updates, get_review, get_conclusion, get_metadata) against live evipedia.ai data, then explains the one write tool without invoking it. Use to smoke-test or show off the MCP.
-version: 0.1.28
+version: 0.1.29
 ---
 
 # evipedia-mcp — Demo the MCP (`/demo`)
@@ -28,7 +28,7 @@ Otherwise, run these steps in order and show the actual tool output for each, wi
 
 8. **Structured metadata** — call `get_metadata` on the same slug. Show the returned JSON and point out the fields the Markdown lacks: the review dates (`datePublished`/`dateModified`/`lastReviewed`), the typed `about` entity with alternate names, and the ordered `citation` list with PubMed PMIDs.
 
-9. **Write path (describe, do NOT call)** — explain that `suggest_intervention(intervention, goal?, references?, email?)` submits a new intervention to evipedia's public suggestion form. Do **not** invoke it during the demo — it POSTs real data to the evipedia team.
+9. **Write path (describe, do NOT call)** — explain that `suggest_review(intervention, goal?, references?, email?)` submits a new intervention to evipedia's public suggestion form. Do **not** invoke it during the demo — it POSTs real data to the evipedia team.
 
 Close with a one-line summary: the server build from step 1, that the server-level instructions were present, and that search → list → updates → conclusion → review → metadata all returned live data.
 

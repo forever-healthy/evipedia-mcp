@@ -1,6 +1,10 @@
 # Evipedia MCP - Change Log
 
 
+### v0.1.29 — 2026-08-25
+
+* **Renamed `suggest_intervention` → `suggest_review`** (breaking). The tool proposes a *review* for evipedia to write, so the old name described its argument rather than its effect. Arguments and behaviour are unchanged — `suggest_review(intervention, goal?, references?, email?)` still POSTs to the same public suggestion form. No alias is kept: MCP clients read the tool list on connect, so a reconnect picks up the new name
+
 ### v0.1.28 — 2026-08-19
 
 * Added `list_updates(days?)` — the catalogue's change feed, newest first, backed by evipedia.ai's new `/updates.json`. Returns `{title, slug, status, date}` per entry, where `status` is `new` (first publication) or `updated` (an existing review revised). Called with no arguments it returns the **last 7 days, capped at 100 entries** (the raw feed spans the whole catalogue — 600+ rows, ~15k tokens, nearly all of it months old); pass `days` for a wider window. Answers recency questions — "what's new on evipedia?", "anything updated this week?" — that previously had no tool

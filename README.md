@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-0.1.28-green.svg)
+![Version](https://img.shields.io/badge/Version-0.1.29-green.svg)
 [![Forever Healthy](https://img.shields.io/badge/(c)_2026-Forever_Healthy-573D7D.svg)](https://forever-healthy.org)
 [![npm](https://img.shields.io/badge/npm-evipedia--mcp-cb3837.svg)](https://www.npmjs.com/package/evipedia-mcp)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.forever--healthy%2Fevipedia--mcp-1f6feb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.forever-healthy/evipedia-mcp)
@@ -19,7 +19,7 @@ A small [Model Context Protocol](https://modelcontextprotocol.io) server that le
 * `get_metadata(slug|url)` → structured medical metadata as JSON — review dates (`datePublished`/`dateModified`/`lastReviewed`, a freshness signal not in the Markdown), the typed `about` entity with alternate names, and an ordered `citation` list with PubMed PMIDs
 
   The read tools accept either a bare slug (e.g. `rapamycin`) or a full evipedia.ai URL (e.g. `https://evipedia.ai/rapamycin`) — the URL's last path segment is the slug, so a search result's URL can be passed straight through.
-* `suggest_intervention(intervention, goal?, references?, email?)` → submit a new intervention to evipedia's public suggestion form (the same one at [evipedia.ai/suggest](https://evipedia.ai/suggest))
+* `suggest_review(intervention, goal?, references?, email?)` → submit a new review for an intervention to evipedia's public suggestion form (the same one at [evipedia.ai/suggest](https://evipedia.ai/suggest))
 * `get_version()` → the running server's package name and version
 
 
@@ -73,7 +73,7 @@ It walks through the read tools (`get_version`, `search_reviews`, `list_reviews`
 The server is a **thin client that only uses evipedia.ai's public endpoints**. It does not depend on the evipedia content repo — the public surfaces are the API by design.
 
 * Fetches live from `https://evipedia.ai` with a small in-process cache (both JSON indexes are tiny)
-* Mostly read-only, no auth required. The one write path is `suggest_intervention`, which POSTs to evipedia's public suggestion form (Formspree)
+* Mostly read-only, no auth required. The one write path is `suggest_review`, which POSTs to evipedia's public suggestion form (Formspree)
 
 
 ### Public API Surface
